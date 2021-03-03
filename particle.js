@@ -87,13 +87,11 @@ class Particle {
   }
 
   move() {
-    // create acc and velo
-
     let atWall = this.pos.x <= this.radius || this.pos.x >= width - this.radius;
 
     if (this.pos.y >= height - this.radius || this.atFloor) {
-      this.vel.y = 0;
-      this.acc.y = 0;
+      // this.vel.y = 0;
+      // this.acc.y = 0;
       this.pos.y = min(this.pos.y, height - this.radius);
       this.atFloor = true;
     } else {
