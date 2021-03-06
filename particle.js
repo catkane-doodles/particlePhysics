@@ -14,17 +14,17 @@ class Particle {
     this.friction = friction;
     this.elasticity = elasticity;
 
-    this.atFloor = false;
+    this.atWall = false;
   }
 
   rotate(velocity, angle) {
     const rotatedVelocities = {
       x:
-        velocity.x * Math.cos(angle) -
-        velocity.y * Math.sin(angle) * this.elasticity,
+        (velocity.x * Math.cos(angle) - velocity.y * Math.sin(angle)) *
+        this.elasticity,
       y:
-        velocity.x * Math.sin(angle) +
-        velocity.y * Math.cos(angle) * this.elasticity,
+        (velocity.x * Math.sin(angle) + velocity.y * Math.cos(angle)) *
+        this.elasticity,
     };
     return rotatedVelocities;
   }
@@ -87,28 +87,23 @@ class Particle {
   }
 
   move() {
-    let atWall = this.pos.x <= this.radius || this.pos.x >= width - this.radius;
-
-    if (this.pos.y >= height - this.radius || this.atFloor) {
-      // this.vel.y = 0;
-      // this.acc.y = 0;
-      this.pos.y = min(this.pos.y, height - this.radius);
+    // at floor
+    if (this.pos.y >= height - this.radius) {
       this.atFloor = true;
     } else {
       this.acc = this.acc.add(this.gravity);
+      // at ceil
     }
-
-    if (atWall) {
-      this.vel.x = 0;
-      this.acc.x = 0;
-      this.pos.x = max(this.radius, min(this.pos.x, width - this.radius));
-    }
+    // keeping between width and height
+    this.pos.x = max(this.radius, min(this.pos.x, width - this.radius));
+    this.pos.y = max(this.radius, min(this.pos.y, height - this.radius));
 
     this.acc.mult(1 - this.friction);
     this.vel = this.vel.add(this.acc);
     this.vel.mult(1 - this.friction);
     if (this.vel.mag() < 0.1) {
       this.vel.mult(0);
+      return;
     }
     this.pos = this.pos.add(this.vel);
   }
